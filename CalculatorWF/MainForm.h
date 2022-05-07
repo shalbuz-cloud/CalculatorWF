@@ -12,6 +12,7 @@ namespace CalculatorWF {
 	/// <summary>
 	/// Сводка для MainForm
 	/// </summary>
+
 	public ref class MainForm : public System::Windows::Forms::Form
 	{
 	public:
@@ -140,12 +141,14 @@ namespace CalculatorWF {
 			// 
 			// CalculationBox
 			// 
+			this->CalculationBox->BackColor = System::Drawing::Color::White;
 			this->CalculationBox->BorderStyle = System::Windows::Forms::BorderStyle::None;
 			this->CalculationBox->Font = (gcnew System::Drawing::Font(L"Segoe UI Semibold", 15.75F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
 			this->CalculationBox->Location = System::Drawing::Point(12, 12);
 			this->CalculationBox->Multiline = true;
 			this->CalculationBox->Name = L"CalculationBox";
+			this->CalculationBox->ReadOnly = true;
 			this->CalculationBox->Size = System::Drawing::Size(263, 73);
 			this->CalculationBox->TabIndex = 0;
 			this->CalculationBox->Text = L"0";
@@ -173,6 +176,7 @@ namespace CalculatorWF {
 			this->btnClearEntry->TabIndex = 1;
 			this->btnClearEntry->Text = L"CE";
 			this->btnClearEntry->UseVisualStyleBackColor = true;
+			this->btnClearEntry->Click += gcnew System::EventHandler(this, &MainForm::btnClearEntry_Click);
 			// 
 			// btnClear
 			// 
@@ -206,6 +210,7 @@ namespace CalculatorWF {
 			this->btnInverse->Name = L"btnInverse";
 			this->btnInverse->Size = System::Drawing::Size(60, 40);
 			this->btnInverse->TabIndex = 1;
+			this->btnInverse->Tag = L"4";
 			this->btnInverse->Text = L"⅟ₓ";
 			this->btnInverse->UseVisualStyleBackColor = true;
 			// 
@@ -217,6 +222,7 @@ namespace CalculatorWF {
 			this->btnPow->Name = L"btnPow";
 			this->btnPow->Size = System::Drawing::Size(60, 40);
 			this->btnPow->TabIndex = 1;
+			this->btnPow->Tag = L"5";
 			this->btnPow->Text = L"x²";
 			this->btnPow->UseVisualStyleBackColor = true;
 			// 
@@ -228,6 +234,7 @@ namespace CalculatorWF {
 			this->btnSqrt->Name = L"btnSqrt";
 			this->btnSqrt->Size = System::Drawing::Size(60, 40);
 			this->btnSqrt->TabIndex = 1;
+			this->btnSqrt->Tag = L"6";
 			this->btnSqrt->Text = L"√";
 			this->btnSqrt->UseVisualStyleBackColor = true;
 			// 
@@ -239,6 +246,7 @@ namespace CalculatorWF {
 			this->btnDivide->Name = L"btnDivide";
 			this->btnDivide->Size = System::Drawing::Size(60, 40);
 			this->btnDivide->TabIndex = 1;
+			this->btnDivide->Tag = L"2";
 			this->btnDivide->Text = L"÷";
 			this->btnDivide->UseVisualStyleBackColor = true;
 			this->btnDivide->Click += gcnew System::EventHandler(this, &MainForm::Arithmetic);
@@ -323,6 +331,7 @@ namespace CalculatorWF {
 			this->btnMultiply->Name = L"btnMultiply";
 			this->btnMultiply->Size = System::Drawing::Size(60, 40);
 			this->btnMultiply->TabIndex = 1;
+			this->btnMultiply->Tag = L"3";
 			this->btnMultiply->Text = L"×";
 			this->btnMultiply->UseVisualStyleBackColor = true;
 			this->btnMultiply->Click += gcnew System::EventHandler(this, &MainForm::Arithmetic);
@@ -335,6 +344,7 @@ namespace CalculatorWF {
 			this->btnMinus->Name = L"btnMinus";
 			this->btnMinus->Size = System::Drawing::Size(60, 40);
 			this->btnMinus->TabIndex = 1;
+			this->btnMinus->Tag = L"1";
 			this->btnMinus->Text = L"-";
 			this->btnMinus->UseVisualStyleBackColor = true;
 			this->btnMinus->Click += gcnew System::EventHandler(this, &MainForm::Arithmetic);
@@ -383,6 +393,7 @@ namespace CalculatorWF {
 			this->btnPlus->Name = L"btnPlus";
 			this->btnPlus->Size = System::Drawing::Size(60, 40);
 			this->btnPlus->TabIndex = 1;
+			this->btnPlus->Tag = L"0";
 			this->btnPlus->Text = L"+";
 			this->btnPlus->UseVisualStyleBackColor = true;
 			this->btnPlus->Click += gcnew System::EventHandler(this, &MainForm::Arithmetic);
@@ -395,6 +406,7 @@ namespace CalculatorWF {
 			this->btnPlusMinus->Name = L"btnPlusMinus";
 			this->btnPlusMinus->Size = System::Drawing::Size(60, 40);
 			this->btnPlusMinus->TabIndex = 1;
+			this->btnPlusMinus->Tag = L"7";
 			this->btnPlusMinus->Text = L"+/-";
 			this->btnPlusMinus->UseVisualStyleBackColor = true;
 			this->btnPlusMinus->Click += gcnew System::EventHandler(this, &MainForm::btnPlusMinus_Click);
@@ -485,16 +497,22 @@ namespace CalculatorWF {
 		}
 #pragma endregion
 
-	double iFirstnum;
-	double iSecondnum;
-	double iResult;
-	String^ iOperator;
+	double firstNum = Double::NaN;
+	double secondNum = Double::NaN;
+	double result = Double::NaN;
+	String^ currentOper;
+	bool isCalculated = false;
 
 
 	// button C
 	private: System::Void btnClear_Click(System::Object^ sender, System::EventArgs^ e) {
 		CalculationBox->Text = "0";
 		labelShowOperation->Text = "";
+		result = Double::NaN;
+		firstNum = Double::NaN;
+		secondNum = Double::NaN;
+		isCalculated = false;
+		currentOper = "";
 	}
 
 
@@ -515,47 +533,79 @@ namespace CalculatorWF {
 
 	// operator event
 	private: System::Void Arithmetic(System::Object^ sender, System::EventArgs^ e) {
+		
 		Button^ operators = safe_cast<Button^>(sender);
-		iFirstnum = Double::Parse(CalculationBox->Text);
+		String^ outNumber;
+
+		if (labelShowOperation->Text != "")
+		{
+			if (!isCalculated && !Double::IsNaN(firstNum))
+			{
+				secondNum = Double::Parse(CalculationBox->Text);
+				calculate();
+				outNumber = System::Convert::ToString(result);
+				currentOper = operators->Text;
+			}
+			else if (!Double::IsNaN(result))
+			{
+				firstNum = result;
+				secondNum = Double::Parse(CalculationBox->Text);
+				calculate();
+				outNumber = System::Convert::ToString(result);
+				currentOper = operators->Text;
+			}
+		}
+		else
+		{
+			currentOper = operators->Text;
+			firstNum = Double::Parse(CalculationBox->Text);
+			outNumber = System::Convert::ToString(firstNum);
+		}
+		
 		CalculationBox->Text = "";
-		iOperator = operators->Text;
-		labelShowOperation->Text = System::Convert::ToString(iFirstnum) + " " + iOperator;
+		labelShowOperation->Text = outNumber + " " + currentOper;
 	}
 	
 
-	// equals button
-	private: System::Void btnEquals_Click(System::Object^ sender, System::EventArgs^ e) {
-		labelShowOperation->Text = "";
-		iSecondnum = Double::Parse(CalculationBox->Text);  // FIXME: Несколько операций 
-
-		if (iOperator == "+")
+	void calculate()
+	{
+		if (currentOper == L"+")
 		{
-			iResult = iFirstnum + iSecondnum;
-			CalculationBox->Text = System::Convert::ToString(iResult);
+			result = firstNum + secondNum;
 		}
-		else if (iOperator == "-")
+		else if (currentOper == L"-")
 		{
-			iResult = iFirstnum - iSecondnum;
-			CalculationBox->Text = System::Convert::ToString(iResult);
+			result = firstNum - secondNum;
 		}
-		else if (iOperator == L"×")
+		else if (currentOper == L"×")
 		{
-			iResult = iFirstnum * iSecondnum;
-			CalculationBox->Text = System::Convert::ToString(iResult);
+			result = firstNum * secondNum;
 		}
-		else if (iOperator == L"÷")
+		else if (currentOper == L"÷")
 		{
-			if (iSecondnum != 0)
+			if (secondNum != 0)
 			{
-				iResult = iFirstnum / iSecondnum;
-				CalculationBox->Text = System::Convert::ToString(iResult);
+				result = firstNum / secondNum;
 			}
 			else
 			{
 				MessageBox::Show("Division by Zero", "Error");
+				return;
 			}
 		}
+
+		CalculationBox->Text = System::Convert::ToString(result);
+		isCalculated = true;
 	}
+
+
+	// equals button
+	private: System::Void btnEquals_Click(System::Object^ sender, System::EventArgs^ e) {
+		labelShowOperation->Text = "";
+		secondNum = Double::Parse(CalculationBox->Text);
+		calculate();
+	}
+
 
 	// backspace button
 	private: System::Void btnBackSpace_Click(System::Object^ sender, System::EventArgs^ e) {
@@ -595,6 +645,12 @@ namespace CalculatorWF {
 		}
 	}
 
+	// button CE
+	private: System::Void btnClearEntry_Click(System::Object^ sender, System::EventArgs^ e) {
+		CalculationBox->Text = "";
+	}
 
-};
+
+	};
+
 }
