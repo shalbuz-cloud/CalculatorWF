@@ -40,87 +40,27 @@ namespace CalculatorWF {
 	private: System::Windows::Forms::Button^ btnClearEntry;
 	private: System::Windows::Forms::Button^ btnClear;
 	private: System::Windows::Forms::Button^ btnBackSpace;
-
-
-
-
-
-
 	private: System::Windows::Forms::Button^ btnInverse;
-
-
-
-
-
 	private: System::Windows::Forms::Button^ btnPow;
 	private: System::Windows::Forms::Button^ btnSqrt;
-
-
 	private: System::Windows::Forms::Button^ btnDivide;
-
 	private: System::Windows::Forms::Button^ btn7;
-
 	private: System::Windows::Forms::Button^ btn4;
 	private: System::Windows::Forms::Button^ btn8;
-
-
 	private: System::Windows::Forms::Button^ btn5;
 	private: System::Windows::Forms::Button^ btn9;
-
-
 	private: System::Windows::Forms::Button^ btn6;
 	private: System::Windows::Forms::Button^ btnMultiply;
 	private: System::Windows::Forms::Button^ btnMinus;
-
-
-
 	private: System::Windows::Forms::Button^ btn1;
 	private: System::Windows::Forms::Button^ btn2;
 	private: System::Windows::Forms::Button^ btn3;
 	private: System::Windows::Forms::Button^ btnPlus;
 	private: System::Windows::Forms::Button^ btnPlusMinus;
-
-
-
-
-
 	private: System::Windows::Forms::Button^ btn0;
 	private: System::Windows::Forms::Button^ btnComma;
 	private: System::Windows::Forms::Button^ btnEquals;
-
-
-
-
 	private: System::Windows::Forms::Label^ labelShowOperation;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 	protected:
@@ -174,8 +114,9 @@ namespace CalculatorWF {
 			this->CalculationBox->BackColor = System::Drawing::SystemColors::Control;
 			this->CalculationBox->BorderStyle = System::Windows::Forms::BorderStyle::None;
 			this->CalculationBox->Enabled = false;
-			this->CalculationBox->Font = (gcnew System::Drawing::Font(L"Segoe UI Semibold", 20.25F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
+			this->CalculationBox->Font = (gcnew System::Drawing::Font(L"Segoe UI Semibold", 27.75F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(204)));
+			this->CalculationBox->ForeColor = System::Drawing::Color::Black;
 			this->CalculationBox->Location = System::Drawing::Point(6, 76);
 			this->CalculationBox->MaxLength = 18;
 			this->CalculationBox->Multiline = true;
@@ -488,8 +429,9 @@ namespace CalculatorWF {
 			// labelShowOperation
 			// 
 			this->labelShowOperation->BackColor = System::Drawing::SystemColors::Control;
-			this->labelShowOperation->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9.75F, System::Drawing::FontStyle::Regular,
-				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(204)));
+			this->labelShowOperation->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 18, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(204)));
+			this->labelShowOperation->ForeColor = System::Drawing::Color::Gray;
 			this->labelShowOperation->Location = System::Drawing::Point(6, 7);
 			this->labelShowOperation->MaximumSize = System::Drawing::Size(297, 90);
 			this->labelShowOperation->Name = L"labelShowOperation";
