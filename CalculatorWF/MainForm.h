@@ -503,7 +503,6 @@ namespace CalculatorWF {
 	// number buttons
 	private: System::Void btnDigit_Click(System::Object^ sender, System::EventArgs^ e) {
 		Button^ numbers = safe_cast<Button^>(sender);
-		isCalculated = false;
 
 		if (CalculationBox->Text == "0")
 		{
@@ -513,42 +512,47 @@ namespace CalculatorWF {
 		{
 			CalculationBox->Text += numbers->Text;
 		}
+		isCalculated = false;
 	}
 
 
 	// operator event
 	private: System::Void Arithmetic(System::Object^ sender, System::EventArgs^ e) {
-		// FIXME: 10 + 5 = x 2  => 15 x 5 = 50
 		Button^ operators = safe_cast<Button^>(sender);
 		String^ outNumber;
 
+		// second operation
 		if (labelShowOperation->Text != "")
 		{
-			if (Double::IsNaN(result))
+			// second number
+			if (!isCalculated)
 			{
 				secondNum = Double::Parse(CalculationBox->Text);
+			}
+			
+			if (Double::IsNaN(result))
+			{
 				calculate();
-				outNumber = System::Convert::ToString(result);
-				currentOper = operators->Text;
 			}
 			else
 			{
 				firstNum = result;
-				secondNum = Double::Parse(CalculationBox->Text);
-				calculate();
-				outNumber = System::Convert::ToString(result);
-				currentOper = operators->Text;
+				if (!isCalculated)
+				{
+					calculate();
+				}
 			}
+			outNumber = System::Convert::ToString(result);
 		}
-		else
+		else  // first operation
 		{
-			currentOper = operators->Text;
 			firstNum = Double::Parse(CalculationBox->Text);
 			outNumber = System::Convert::ToString(firstNum);
 		}
-		
+
+		currentOper = operators->Text;
 		CalculationBox->Text = "";
-		labelShowOperation->Text = outNumber + " " + currentOper;  // FIXME:
+		labelShowOperation->Text = outNumber + " " + currentOper;
 	}
 	
 
@@ -591,15 +595,20 @@ namespace CalculatorWF {
 	// equals button
 	private: System::Void btnEquals_Click(System::Object^ sender, System::EventArgs^ e) {
 		
-		if (Double::IsNaN(result))
+		if (!isCalculated)
 		{
+			//firstNum = Double::IsNaN(result) ? firstNum : result;
 			secondNum = Double::Parse(CalculationBox->Text);
 		}
-		else if (isCalculated)
+		else
 		{
-			firstNum = result;
+			//firstNum = result;
 			labelShowOperation->Text = String::Format("{0} {1}", firstNum, currentOper);
 		}
+		
+		firstNum = Double::IsNaN(result) ? firstNum : result;
+		//secondNum = isCalculated ? secondNum : Double::Parse(CalculationBox->Text);
+
 		calculate();
 
 	}
