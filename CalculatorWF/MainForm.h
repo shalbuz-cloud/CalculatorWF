@@ -503,6 +503,7 @@ namespace CalculatorWF {
 	// number buttons
 	private: System::Void btnDigit_Click(System::Object^ sender, System::EventArgs^ e) {
 		Button^ numbers = safe_cast<Button^>(sender);
+		isCalculated = false;
 
 		if (CalculationBox->Text == "0")
 		{
@@ -517,20 +518,20 @@ namespace CalculatorWF {
 
 	// operator event
 	private: System::Void Arithmetic(System::Object^ sender, System::EventArgs^ e) {
-		
+		// FIXME: 10 + 5 = x 2  => 15 x 5 = 50
 		Button^ operators = safe_cast<Button^>(sender);
 		String^ outNumber;
 
 		if (labelShowOperation->Text != "")
 		{
-			if (!isCalculated && !Double::IsNaN(firstNum))
+			if (Double::IsNaN(result))
 			{
 				secondNum = Double::Parse(CalculationBox->Text);
 				calculate();
 				outNumber = System::Convert::ToString(result);
 				currentOper = operators->Text;
 			}
-			else if (!Double::IsNaN(result))
+			else
 			{
 				firstNum = result;
 				secondNum = Double::Parse(CalculationBox->Text);
@@ -547,47 +548,60 @@ namespace CalculatorWF {
 		}
 		
 		CalculationBox->Text = "";
-		labelShowOperation->Text = outNumber + " " + currentOper;
+		labelShowOperation->Text = outNumber + " " + currentOper;  // FIXME:
 	}
 	
 
 	void calculate()
 	{
-		if (currentOper == L"+")
-		{
-			result = firstNum + secondNum;
-		}
-		else if (currentOper == L"-")
-		{
-			result = firstNum - secondNum;
-		}
-		else if (currentOper == L"×")
-		{
-			result = firstNum * secondNum;
-		}
-		else if (currentOper == L"÷")
-		{
-			if (secondNum != 0)
+		if (!Double::IsNaN(firstNum) && !Double::IsNaN(secondNum))
+		{ 
+			if (currentOper == L"+")
 			{
-				result = firstNum / secondNum;
+				result = firstNum + secondNum;
 			}
-			else
+			else if (currentOper == L"-")
 			{
-				MessageBox::Show("Division by Zero", "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
-				return;
+				result = firstNum - secondNum;
 			}
-		}
+			else if (currentOper == L"×")
+			{
+				result = firstNum * secondNum;
+			}
+			else if (currentOper == L"÷")
+			{
+				if (secondNum != 0)
+				{
+					result = firstNum / secondNum;
+				}
+				else
+				{
+					MessageBox::Show("Division by Zero", "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
+					return;
+				}
+			}
 
-		CalculationBox->Text = System::Convert::ToString(result);
-		isCalculated = true;
+			labelShowOperation->Text += String::Format(" {0} =", secondNum);
+			CalculationBox->Text = System::Convert::ToString(result);
+			isCalculated = true;
+		}
 	}
 
 
 	// equals button
 	private: System::Void btnEquals_Click(System::Object^ sender, System::EventArgs^ e) {
-		labelShowOperation->Text = "";
-		secondNum = Double::Parse(CalculationBox->Text);
+		
+		if (Double::IsNaN(result))
+		{
+			secondNum = Double::Parse(CalculationBox->Text);
+		}
+		else if (isCalculated)
+		{
+			firstNum = result;
+			labelShowOperation->Text = String::Format("{0} {1}", firstNum, currentOper);
+		}
 		calculate();
+
 	}
 
 
