@@ -470,8 +470,12 @@ namespace CalculatorWF {
 			this->Controls->Add(this->btnInverse);
 			this->Controls->Add(this->btnPercent);
 			this->Controls->Add(this->CalculationBox);
+			this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::FixedDialog;
 			this->Icon = (cli::safe_cast<System::Drawing::Icon^>(resources->GetObject(L"$this.Icon")));
 			this->KeyPreview = true;
+			this->MaximizeBox = false;
+			this->MaximumSize = System::Drawing::Size(326, 463);
+			this->MinimumSize = System::Drawing::Size(326, 463);
 			this->Name = L"MainForm";
 			this->Text = L"Calculator";
 			this->KeyDown += gcnew System::Windows::Forms::KeyEventHandler(this, &MainForm::MainForm_KeyDown);
